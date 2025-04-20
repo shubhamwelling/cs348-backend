@@ -11,7 +11,7 @@ import os
 app = Flask(__name__)
 CORS(app, 
     supports_credentials=True,
-    origins=["https://new-cs348-frontend.onrender.com/", "http://localhost:3000"],
+    origins=["https://new-cs348-frontend.onrender.com", "http://localhost:3000"],
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 )
