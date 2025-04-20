@@ -1,9 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
-from routes.auth import auth_bp
-from routes.customer import register_customer_routes
-from routes.order import register_order_routes
-from routes.report import register_report_routes
+from flask-server.routes.auth import auth_bp
+from flask-server.routes.customer import register_customer_routes
+from flask-server.routes.order import register_order_routes
+from flask-server.routes.report import register_report_routes
 import os
 
 # Initialize Flask app
