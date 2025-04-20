@@ -60,7 +60,7 @@ def login():
             token = jwt.encode({
                 'user_id': user.id,
                 'exp': datetime.utcnow() + timedelta(hours=1)
-            }, os.environ.get('SECRET_KEY', 'dev-secret-key'))
+            }, os.environ.get('SECRET_KEY', 'dev-secret-key'), algorithm="HS256")
             
             return jsonify({
                 'message': 'Login successful',
