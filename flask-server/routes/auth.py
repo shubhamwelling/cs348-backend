@@ -45,10 +45,11 @@ def login():
         user = User.query.filter_by(username=data['username']).first()
         
         if user and user.check_password(data['password']):
-            session.permanent = True
             session['user_id'] = user.id
+            # Return session info for debugging
             return jsonify({
                 'message': 'Login successful',
+                'session_id': session.sid,
                 'user_id': user.id
             }), 200
         
@@ -65,12 +66,11 @@ def logout():
 @login_required
 def get_current_user():
     try:
-        user = User.query.get(session['user_id'])
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
+        # Return session info for debugging
         return jsonify({
-            'id': user.id,
-            'username': user.username
+            'id': session['user_id'],
+            'username': User.query.get(session['user_id']).username,
+            'session_id': session.sid
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
