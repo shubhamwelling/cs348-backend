@@ -54,7 +54,11 @@ def login():
         if not data or 'username' not in data or 'password' not in data:
             return jsonify({'error': 'Username and password are required'}), 400
             
+        print(f"Username: {data['username']}")
         user = User.query.filter_by(username=data['username']).first()
+        print(f"User in DB: {user}")
+        if user:
+            print(f"Password matches: {user.check_password(data['password'])}")
         
         if user and user.check_password(data['password']):
             token = jwt.encode({
