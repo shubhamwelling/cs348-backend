@@ -9,7 +9,12 @@ import os
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["https://cs348-backend-a1eh.onrender.com", "http://localhost:3000"])
+CORS(app, 
+    supports_credentials=True,
+    origins=["https://cs348-backend-a1eh.onrender.com", "http://localhost:3000"],
+    allow_headers=["Content-Type"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
 # Ensure instance folder exists
 os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
@@ -24,10 +29,10 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'isolation_level': 'IMMEDIATE'  # SQLite isolation level
     }
 }
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')  # Use environment variable or fallback
-app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Allow cross-site cookies
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
 # Bind the database to this app
 db.init_app(app)
