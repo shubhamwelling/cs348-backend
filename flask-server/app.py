@@ -9,12 +9,7 @@ import os
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, 
-    supports_credentials=True,
-    origins=["https://cs348-backend-a1eh.onrender.com", "http://localhost:3000"],
-    allow_headers=["Content-Type"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-)
+CORS(app, supports_credentials=True)
 
 # Ensure instance folder exists
 os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
