@@ -9,7 +9,12 @@ import os
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, 
+    supports_credentials=True,
+    origins=["http://localhost:3000"],
+    allow_headers=["Content-Type"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
 # Ensure instance folder exists
 os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
@@ -27,9 +32,9 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_COOKIE_NAME'] = 'dunder_mifflin_session'
-app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to False for localhost
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Changed to Lax for localhost
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 
 # Bind the database to this app
