@@ -1,17 +1,29 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify
 from models import db
 from user import User
 from functools import wraps
+import jwt
+from datetime import datetime, timedelta
+import os
 
 auth_bp = Blueprint('auth', __name__)
 
-def login_required(f):
+def token_required(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return jsonify({'error': 'Please log in to access this resource'}), 401
-        return f(*args, **kwargs)
-    return decorated_function
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+        try:
+            token = token.split(' ')[1]  # Remove 'Bearer ' prefix
+            data = jwt.decode(token, os.environ.get('SECRET_KEY', 'dev-secret-key'), algorithms=["HS256"])
+            current_user = User.query.get(data['user_id'])
+            if not current_user:
+                return jsonify({'error': 'User not found'}), 401
+        except Exception as e:
+            return jsonify({'error': 'Invalid token'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -45,32 +57,27 @@ def login():
         user = User.query.filter_by(username=data['username']).first()
         
         if user and user.check_password(data['password']):
-            session['user_id'] = user.id
-            # Return session info for debugging
+            token = jwt.encode({
+                'user_id': user.id,
+                'exp': datetime.utcnow() + timedelta(hours=1)
+            }, os.environ.get('SECRET_KEY', 'dev-secret-key'))
+            
             return jsonify({
                 'message': 'Login successful',
-                'session_id': session.sid,
-                'user_id': user.id
+                'token': token
             }), 200
         
         return jsonify({'error': 'Invalid username or password'}), 401
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@auth_bp.route('/logout', methods=['POST'])
-def logout():
-    session.clear()
-    return jsonify({'message': 'Logged out successfully'}), 200
-
 @auth_bp.route('/me', methods=['GET'])
-@login_required
-def get_current_user():
+@token_required
+def get_current_user(current_user):
     try:
-        # Return session info for debugging
         return jsonify({
-            'id': session['user_id'],
-            'username': User.query.get(session['user_id']).username,
-            'session_id': session.sid
+            'id': current_user.id,
+            'username': current_user.username
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
