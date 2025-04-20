@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+import routes
 from routes.auth import auth_bp
 from routes.customer import register_customer_routes
 from routes.order import register_order_routes
