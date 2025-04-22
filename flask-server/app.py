@@ -20,7 +20,7 @@ CORS(app,
 os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 
 # Configuration settings
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(app.root_path, "instance", "dunder_mifflin.db")}'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'connect_args': {
