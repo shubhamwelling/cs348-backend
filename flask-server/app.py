@@ -23,11 +23,7 @@ os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'connect_args': {
-        'timeout': 30,  # Set connection timeout
-        'check_same_thread': False,  # Allow multiple threads
-        'isolation_level': 'IMMEDIATE'  # SQLite isolation level
-    }
+    "isolation_level": "REPEATABLE READ"  # or 'READ COMMITTED', 'SERIALIZABLE'
 }
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
 app.config['SESSION_TYPE'] = 'filesystem'
