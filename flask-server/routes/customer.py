@@ -3,13 +3,19 @@ from models import Order, db, Customer
 
 def register_customer_routes(app):
 
+    def with_repeatable_read():
+        # Set the isolation level for the current request
+        db.session.connection(execution_options={"isolation_level": "REPEATABLE READ"})
+
     @app.route('/customers/', methods=['GET'])
     def get_all_customers():
+        with_repeatable_read()
         customers = Customer.query.all()
         return jsonify([{'id': c.id, 'name': c.name, 'company': c.company, 'email': c.email, 'phone': c.phone, 'age': c.age} for c in customers])
     
     @app.route('/customers/<int:id>', methods=['GET'])
     def get_customer(id):
+        with_repeatable_read()
         customer = Customer.query.get(id)
         if customer:
             return jsonify({'id': customer.id, 'name': customer.name, 'company': customer.company, 'email': customer.email, 'phone': customer.phone, 'age': customer.age})
@@ -18,6 +24,7 @@ def register_customer_routes(app):
 
     @app.route('/customers/add', methods=['POST'])
     def add_customer():
+        with_repeatable_read()
         data = request.get_json()
         new_customer = Customer(name=data['name'], email=data['email'], company=data['company'], phone=data['phone'], age=data['age'])
         db.session.add(new_customer)
@@ -26,6 +33,7 @@ def register_customer_routes(app):
     
     @app.route('/customers/update/<int:id>', methods=['PUT'])
     def update_customer(id):
+        with_repeatable_read()
         customer = Customer.query.get(id)
 
         if not customer:
@@ -49,6 +57,7 @@ def register_customer_routes(app):
 
     @app.route('/customers/delete/<int:customer_id>', methods=['DELETE'])
     def delete_customer(customer_id):
+        with_repeatable_read()
         customer = Customer.query.get(customer_id)
         if customer:
             db.session.delete(customer)
