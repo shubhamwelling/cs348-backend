@@ -4,10 +4,15 @@ from datetime import datetime
 
 
 def register_order_routes(app):
+
+    def with_repeatable_read():
+        # Set the isolation level for the current request
+        db.session.connection(execution_options={"isolation_level": "REPEATABLE READ"})
    
     @app.route('/orders/', methods=['GET'])
     def get_all_orders():
         # Query for Order and Customer joined on Order.customer_id = Customer.id
+        with_repeatable_read()
         orders_with_customers = db.session.query(Order, Customer).join(Customer, Customer.id == Order.customer_id).order_by(Order.order_time).all()
        
         valid_orders = [
@@ -28,6 +33,7 @@ def register_order_routes(app):
     @app.route('/orders/<int:id>', methods=['GET'])
     def get_order(id):
         # Query for Order and Customer joined on Order.customer_id = Customer.id
+        with_repeatable_read()
         orders_with_customers = db.session.query(Order, Customer).join(Customer, Customer.id == Order.customer_id).order_by(Order.order_time).all()
         valid_orders = [
             {
@@ -45,6 +51,7 @@ def register_order_routes(app):
 
     @app.route('/orders/add', methods=['POST'])
     def add_order():
+        with_repeatable_read()
         data = request.get_json()
         customer = None
         if 'customer_id' in data:
@@ -75,6 +82,7 @@ def register_order_routes(app):
 
     @app.route('/orders/update/<int:id>', methods=['PUT'])
     def update_order(id):
+        with_repeatable_read()
         order = Order.query.get(id)
         if not order:
             return jsonify({"error": "Order not found"}), 404
