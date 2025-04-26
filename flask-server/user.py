@@ -9,7 +9,7 @@ class User(db.Model):
     password_hash = db.Column(db.Text, nullable=False)
 
     __table_args__ = (
-        Index('idx_username_password', 'username', 'password', postgresql_using='hash'),
+        Index('idx_username_password', 'username', 'password_hash', postgresql_using='hash'),
     )
 
     def set_password(self, password):
