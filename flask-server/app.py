@@ -22,9 +22,6 @@ os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 # Configuration settings
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    "isolation_level": "REPEATABLE READ"  # or 'READ COMMITTED', 'SERIALIZABLE'
-}
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_COOKIE_NAME'] = 'dunder_mifflin_session'
