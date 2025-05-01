@@ -5,13 +5,13 @@ from datetime import datetime
 
 def register_report_routes(app):
 
-    def with_repeatable_read():
+    def with_serializable():
         # Set the isolation level for the current request
-        db.session.connection(execution_options={"isolation_level": "REPEATABLE READ"})
+        db.session.connection(execution_options={"isolation_level": "SERIALIZABLE"})
 
     @app.route('/reports/generate', methods=['GET'])
     def generate_report():
-        with_repeatable_read()
+        with_serializable()
         start_date_str = request.args.get('start_date', type=str)
         end_date_str = request.args.get('end_date', type=str)
         min_order_size = request.args.get('min_order_size', type=float, default=0)
