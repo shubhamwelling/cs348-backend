@@ -52,9 +52,7 @@ def register_report_routes(app):
                 }), 200
 
             order_data = []
-            order_count = 0
             for row in orders_rows:
-                order_count += 1
                 order_data.append({
                     'order_id': row.order_id,
                     'order_time': str(row.order_time),
@@ -95,6 +93,17 @@ def register_report_routes(app):
                 AND c.age IS NOT NULL
             """)
             avg_age = conn.execute(avg_age_query, params).scalar()
+
+            num_orders_query = text("""
+                SELECT COUNT(*) AS order_count
+                FROM orders o
+                JOIN customer c ON o.customer_id = c.id
+                WHERE o.order_time BETWEEN :start_date AND :end_date
+                AND o.order_size >= :min_order_size
+                AND o.sale_value >= :min_sale_value
+                AND c.age IS NOT NULL
+            """)
+            order_count = conn.execute(num_orders_query, params).scalar()
 
         detailed_response = {"orders": order_data}
         aggregate_response = {
