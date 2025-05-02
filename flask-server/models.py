@@ -16,6 +16,7 @@ class Customer(db.Model):
     # Prevent duplicate customers with the same name, email, and phone
     __table_args__ = (
         db.UniqueConstraint('name', 'email', 'phone', name='uq_customer_identity'),
+        Index('idx_customer_id', 'id', postgresql_using='hash')
     )
 
     # Foreign key constraint between Customer and Order - all associated orders should be deleted if customer is deleted
@@ -37,5 +38,6 @@ class Order(db.Model):
     # Prevent duplicate orders
     __table_args__ = (
         db.UniqueConstraint('customer_id', 'order_time', name='uq_order_entry'),
-        Index('idx_order_time_size_value', 'order_time', 'order_size', 'sale_value')
+        Index('idx_order_time_size_value', 'order_time', 'order_size', 'sale_value'),
+        Index('idx_order_id', 'id', postgresql_using='hash')
     )
